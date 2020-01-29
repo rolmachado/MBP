@@ -20,6 +20,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
  * Security configuration
+ *
  * @author Imeri Amil
  */
 
@@ -28,61 +29,56 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-	@Bean
-	public RestAuthenticationEntryPoint restAuthenticationEntryPoint() {
-		return new RestAuthenticationEntryPoint();
-	}
+    @Bean
+    public RestAuthenticationEntryPoint restAuthenticationEntryPoint() {
+        return new RestAuthenticationEntryPoint();
+    }
 
     @Bean
     public UserDetailsService mongoUserDetails() {
         return new UserDetailsServiceImpl();
     }
 
-	@Bean
+    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-	@Override
+    @Override
     public void configure(AuthenticationManagerBuilder auth) {
         try {
-        	UserDetailsService userDetailsService = mongoUserDetails();
+            UserDetailsService userDetailsService = mongoUserDetails();
             auth
-                .userDetailsService(userDetailsService)
+                    .userDetailsService(userDetailsService)
                     .passwordEncoder(passwordEncoder());
         } catch (Exception e) {
             throw new BeanInitializationException("Security configuration failed", e);
         }
     }
 
-	@Override
-	public void configure(WebSecurity web) throws Exception {
-	    web.ignoring()
-	    .antMatchers(HttpMethod.OPTIONS, "/**")
-	    .antMatchers("/resources/**")
-	    .antMatchers("/webapp/**");
-	}
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring()
+                .antMatchers(HttpMethod.OPTIONS, "/**")
+                .antMatchers("/resources/**")
+                .antMatchers("/webapp/**");
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-        	.csrf().disable()
-        	.authorizeRequests()
-        	.antMatchers("/api/authenticate").permitAll()
-        	.antMatchers(HttpMethod.POST, "/api/users").permitAll()
-        	.antMatchers(HttpMethod.PUT, "/api/users").hasAuthority(Constants.ADMIN)
-        	.antMatchers(HttpMethod.GET, "/api/users").hasAuthority(Constants.ADMIN)
-        	.antMatchers(HttpMethod.GET, "/api/users/:username").hasAuthority(Constants.ADMIN)
-        	.antMatchers(HttpMethod.DELETE, "/api/users/:username").hasAuthority(Constants.ADMIN)
-        	.antMatchers("/api/**").authenticated()
-		.and()
-			.httpBasic()
-        	.authenticationEntryPoint(restAuthenticationEntryPoint())
-        .and()
-        	.logout()
-        	.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-        	.logoutSuccessUrl("/login")
-        	.invalidateHttpSession(true)
-        	.deleteCookies("JSESSIONID");
+                .csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/api/authenticate").permitAll()
+                .antMatchers("/api/**").authenticated()
+                .and()
+                .httpBasic()
+                .authenticationEntryPoint(restAuthenticationEntryPoint())
+                .and()
+                .logout()
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/login")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID");
     }
 }
