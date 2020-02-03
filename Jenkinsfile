@@ -32,7 +32,7 @@ pipeline {
         
         stage ('Deploy'){
             steps {
-                run_docker(${env.BRANCH_NAME})
+                run_docker(env.BRANCH_NAME)
              }
         }
     }
