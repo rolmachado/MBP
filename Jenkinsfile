@@ -32,7 +32,7 @@ pipeline {
         
         stage ('Deploy'){
             steps {
-                do_deploy("target/MBP-0.1.war", "localhost", "deploy/${env.BRANCH_NAME}")
+                run_docker(${env.BRANCH_NAME})
              }
         }
     }
