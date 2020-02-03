@@ -49,3 +49,8 @@ def do_deploy(file, host, context) {
         sh "curl -v -u ${username}:${password} -T ${file} 'http://${host}:8888/manager/text/deploy?path=/${context}&update=true'"
     }
 }
+
+def run_docker(branch_name) {
+    sh "git clone https://github.com/IPVS-AS/MBP-Docker.git ."
+    sh "docker build -t mbp_${branch_name} --build-arg branch=${branch_name} full/"
+}
