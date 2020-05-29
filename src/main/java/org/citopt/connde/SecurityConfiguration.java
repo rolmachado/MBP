@@ -98,7 +98,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      * Creates a bean which configures the CORS support.
      */
     @Bean
-    private CorsConfigurationSource corsConfigurationSource() {
+    protected CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Collections.singletonList("*"));
         configuration.setAllowedMethods(Collections.singletonList("*"));
